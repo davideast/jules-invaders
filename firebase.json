@@ -9,7 +9,9 @@
       "package.json",
       "package-lock.json",
       "README.md",
-      ".github"
+      ".github",
+      ".firebaserc",
+      ".firebase/**"
     ]
   }
 }
