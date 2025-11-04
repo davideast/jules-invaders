@@ -8,9 +8,15 @@
 </head>
 <body>
   <div id="gameContainer">
-    <h1>Jules Invaders</h1>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <button id="playAgainBtn" style="display: none;">Play Again</button>
+    <div id="gameArea">
+        <h1>Jules Invaders</h1>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <button id="playAgainBtn" style="display: none;">Play Again</button>
+    </div>
+    <div id="scoreboard">
+        <h2>SCOREBOARD</h2>
+        <ul></ul>
+    </div>
   </div>
   <div id="mobileControls" style="display: none;">
     <button id="leftBtn">LEFT</button>
@@ -18,6 +24,7 @@
     <button id="rightBtn">RIGHT</button>
   </div>
   <script src="script.js"></script>
+  <script type="module" src="network.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       initGame({ isDemo: false });
