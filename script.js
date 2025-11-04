@@ -1106,82 +1106,38 @@ function initGame(config) {
         fireBtn.addEventListener('touchend', () => { keys[' '] = false; });
     }
 
-    setupRealtimeLeaderboard();
     gameLoop();
 }
 
-// --- Firebase and Leaderboard Logic ---
-let lastScoreUpdateTime = 0;
-const scoreUpdateThrottle = 500; // ms
+// --- Score Update Logic ---
+let lastScore = -1;
+function updateScore(newScore) {
+    if (newScore === lastScore) return;
 
-function setupRealtimeLeaderboard() {
-    const {
-        initializeApp,
-        getDatabase,
-        ref,
-        set,
-        onValue,
-        update,
-        getAuth,
-        signInAnonymously,
-        onAuthStateChanged,
-        firebaseConfig
-    } = window.firebase;
+    score = newScore;
+    lastScore = newScore;
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
+    const event = new CustomEvent('GE_SCORE_UPDATED', { detail: { score } });
+    window.dispatchEvent(event);
+}
 
-    let sessionId = new URLSearchParams(window.location.search).get('session_id');
-    if (!sessionId) {
-        sessionId = Math.random().toString(36).substring(2, 9);
-        window.history.replaceState({}, document.title, "?session_id=" + sessionId);
+// --- Game Loop Modifications ---
+function update() {
+    if (gameOver && !gameConfig.isDemo) return;
+
+    // ... existing update logic ...
+    const originalScore = score;
+
+    // --- existing collision detection & score updates ---
+    // Example: alien hit
+    // updateScore(score + 10);
+
+    // After all score-affecting logic...
+    if (score !== originalScore) {
+        updateScore(score);
     }
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const uid = user.uid;
-            const playerRef = ref(db, `sessions/${sessionId}/${uid}`);
-            const playerName = `Pilot ${uid.substring(0, 4).toUpperCase()}`;
-            set(playerRef, { name: playerName, score: 0 });
-
-            window.addEventListener('beforeunload', () => {
-                set(playerRef, null);
-            });
-
-            const sessionRef = ref(db, `sessions/${sessionId}`);
-            onValue(sessionRef, (snapshot) => {
-                const sessionData = snapshot.val();
-                if (sessionData) {
-                    const playerList = document.getElementById('playerList');
-                    playerList.innerHTML = '';
-                    const players = Object.entries(sessionData).map(([id, data]) => ({ id, ...data }));
-                    players.sort((a, b) => b.score - a.score);
-
-                    players.forEach(player => {
-                        const li = document.createElement('li');
-                        li.textContent = `${player.name}: ${player.score}`;
-                        if (player.id === uid) {
-                            li.classList.add('current-player-score');
-                        }
-                        playerList.appendChild(li);
-                    });
-                }
-            });
-
-            // This is the hook for score updates
-            const originalUpdate = window.update;
-            window.update = function() {
-                originalUpdate.apply(this, arguments);
-
-                const now = Date.now();
-                if (!gameOver && now - lastScoreUpdateTime > scoreUpdateThrottle) {
-                    update(playerRef, { score: score });
-                    lastScoreUpdateTime = now;
-                }
-            }
-        } else {
-            signInAnonymously(auth);
-        }
-    });
+    // ... rest of the update logic ...
 }
+
+export { initGame as init };
