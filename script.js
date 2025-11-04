@@ -201,10 +201,10 @@ let squidStormMessageTimer = 0;
 let squidSquadActive = false;
 let squidSquadTimer = 0;
 
-let score = 0;
+export let score = 0;
 let highScore = 0;
 let level = 1;
-let gameOver = false;
+export let gameOver = false;
 let gameWon = false;
 let animationFrame = 0;
 let alienDirection = 1;
@@ -1107,4 +1107,8 @@ function initGame(config) {
     }
 
     gameLoop();
+}
+
+export function updateScore(newScore) {
+    score = newScore;
 }

@@ -2,25 +2,10 @@
 let lastScoreUpdateTime = 0;
 const scoreUpdateThrottle = 500; // ms
 
-export function setupRealtimeLeaderboard() {
-    const {
-        initializeApp,
-        getDatabase,
-        ref,
-        set,
-        onValue,
-        update,
-        getAuth,
-        signInAnonymously,
-        onAuthStateChanged,
-        firebaseConfig,
-        query,
-        limitToLast
-    } = window.firebase;
+import { db, auth, ref, set, onValue, update, query, limitToLast, signInAnonymously, onAuthStateChanged } from './firebase-init.js';
+import { score, gameOver, updateScore } from './script.js';
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
+export function setupRealtimeLeaderboard() {
 
     let sessionId = new URLSearchParams(window.location.search).get('session_id');
     if (!sessionId) {
@@ -69,16 +54,13 @@ export function setupRealtimeLeaderboard() {
             });
 
             // This is the hook for score updates
-            const originalUpdate = window.update;
-            window.update = function() {
-                originalUpdate.apply(this, arguments);
-
+            setInterval(() => {
                 const now = Date.now();
                 if (!gameOver && now - lastScoreUpdateTime > scoreUpdateThrottle) {
                     update(playerRef, { score: score });
                     lastScoreUpdateTime = now;
                 }
-            }
+            }, scoreUpdateThrottle);
         } else {
             signInAnonymously(auth);
         }
