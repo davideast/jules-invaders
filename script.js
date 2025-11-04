@@ -634,7 +634,7 @@ function createExplosion(x, y, color, count = 20) {
 }
 
 // --- Main Game Loop ---
-function update() {
+function updateGame() {
     if (gameOver && !gameConfig.isDemo) return;
 
     animationFrame++;
@@ -1064,7 +1064,7 @@ function draw() {
 }
 
 function gameLoop() {
-    update();
+    updateGame();
     draw();
     requestAnimationFrame(gameLoop);
 }

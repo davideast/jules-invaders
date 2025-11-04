@@ -53,7 +53,8 @@ function init() {
             myUid = user.uid;
             const myPlayerRef = ref(db, `sessions/${sessionId}/players/${myUid}`);
             set(myPlayerRef, { score: 0 });
-            onDisconnect(myPlayerRef).remove();
+
+            window.dispatchEvent(new CustomEvent('NE_AUTH_COMPLETE'));
 
             onValue(ref(db, `sessions/${sessionId}/players`), (snapshot) => {
                 const players = snapshot.val();
