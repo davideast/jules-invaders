@@ -47,6 +47,26 @@ canvas {
   color: #FFD700; /* Gold color to highlight yourself */
 }
 
+@keyframes pulse {
+  0% {
+    color: #fff;
+  }
+  50% {
+    color: #FFD700;
+  }
+  100% {
+    color: #fff;
+  }
+}
+
+.active-session-score {
+  animation: pulse 1s infinite;
+}
+
+#leaderboard {
+  overflow-y: auto;
+}
+
 h1 {
   display: none;
 }
