@@ -43,6 +43,10 @@ canvas {
   color: #000;
 }
 
+.current-player-score {
+  color: #FFD700; /* Gold color to highlight yourself */
+}
+
 h1 {
   display: none;
 }
