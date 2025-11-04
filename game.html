@@ -8,9 +8,15 @@
 </head>
 <body>
   <div id="gameContainer">
-    <h1>Jules Invaders</h1>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <button id="playAgainBtn" style="display: none;">Play Again</button>
+    <div id="gameArea">
+        <h1>Jules Invaders</h1>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <button id="playAgainBtn" style="display: none;">Play Again</button>
+    </div>
+    <div id="scoreboard">
+        <h2>SCOREBOARD</h2>
+        <ul></ul>
+    </div>
   </div>
   <div id="mobileControls" style="display: none;">
     <button id="leftBtn">LEFT</button>
@@ -18,6 +24,40 @@
     <button id="rightBtn">RIGHT</button>
   </div>
   <script src="script.js"></script>
+  <script type="module" src="network.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue, update, push, onDisconnect, serverTimestamp, runTransaction } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js';
+    import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYQQu4yqhv6SbKWJMYWQlikxxV7OEkoFo",
+      authDomain: "jules-invaders.firebaseapp.com",
+      projectId: "jules-invaders",
+      storageBucket: "jules-invaders.appspot.com",
+      messagingSenderId: "430967323203",
+      appId: "1:430967323203:web:e9959c5c67cce237a2f2f6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    window.firebase = {
+        db,
+        auth,
+        ref,
+        set,
+        onValue,
+        update,
+        push,
+        onDisconnect,
+        serverTimestamp,
+        signInAnonymously,
+        onAuthStateChanged,
+        runTransaction
+    };
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       initGame({ isDemo: false });

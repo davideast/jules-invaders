@@ -201,7 +201,18 @@ let squidStormMessageTimer = 0;
 let squidSquadActive = false;
 let squidSquadTimer = 0;
 
-let score = 0;
+var score = 0;
+
+// Since score is now a 'var', it's a property of the global 'window' object.
+// We can intercept its changes by redefining it on the window.
+let _score = 0;
+Object.defineProperty(window, 'score', {
+    get: () => _score,
+    set: (value) => {
+        _score = value;
+        window.dispatchEvent(new CustomEvent('GE_SCORE_UPDATED', { detail: { score: _score } }));
+    }
+});
 let highScore = 0;
 let level = 1;
 let gameOver = false;
