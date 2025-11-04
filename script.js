@@ -1176,7 +1176,7 @@ function setupRealtimeLeaderboard() {
 
                 const now = Date.now();
                 if (!gameOver && now - lastScoreUpdateTime > scoreUpdateThrottle) {
-                    update(playerRef, { score: window.score });
+                    update(playerRef, { score: score });
                     lastScoreUpdateTime = now;
                 }
             }
