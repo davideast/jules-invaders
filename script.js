@@ -201,18 +201,20 @@ let squidStormMessageTimer = 0;
 let squidSquadActive = false;
 let squidSquadTimer = 0;
 
-var score = 0;
+let gameState = {
+    score: 0
+};
 
-// Since score is now a 'var', it's a property of the global 'window' object.
-// We can intercept its changes by redefining it on the window.
-let _score = 0;
-Object.defineProperty(window, 'score', {
-    get: () => _score,
-    set: (value) => {
-        _score = value;
-        window.dispatchEvent(new CustomEvent('GE_SCORE_UPDATED', { detail: { score: _score } }));
+gameState = new Proxy(gameState, {
+    set: function (target, property, value) {
+        target[property] = value;
+        if (property === 'score') {
+            window.dispatchEvent(new CustomEvent('GE_SCORE_UPDATED', { detail: { score: value } }));
+        }
+        return true;
     }
 });
+
 let highScore = 0;
 let level = 1;
 let gameOver = false;
@@ -366,7 +368,7 @@ if (playAgainBtn) {
 }
 
 function resetGame() {
-  score = 0;
+  gameState.score = 0;
   level = 1;
 
   // Reset colors to default
@@ -739,10 +741,10 @@ function update() {
                     alien.status = 0;
                     p.status = 0;
                     if (alien.isSquid) {
-                        score += 50;
+                        gameState.score += 50;
                         createExplosion(alien.x + alienWidth / 2, alien.y + alienHeight / 2, colors.squid);
                     } else {
-                        score += 10;
+                        gameState.score += 10;
                         explosions.push({ x: alien.x, y: alien.y, color: colors.explosion, size: 30, timer: 10 });
                     }
 
@@ -778,7 +780,7 @@ function update() {
             if (ufo.status === 1 && p.x > ufo.x && p.x < ufo.x + ufo.width && p.y > ufo.y && p.y < ufo.y + ufo.height) {
                 ufo.status = 0;
                 p.status = 0;
-                score += 100;
+                gameState.score += 100;
                 explosionSound.play();
             }
 
@@ -786,7 +788,7 @@ function update() {
             if (benevolentUfo.status === 1 && p.x > benevolentUfo.x && p.x < benevolentUfo.x + benevolentUfo.width && p.y > benevolentUfo.y && p.y < benevolentUfo.y + benevolentUfo.height) {
                 benevolentUfo.status = 0;
                 p.status = 0;
-                score += 200;
+                gameState.score += 200;
                 benevolentHitSound.play();
                 createExplosion(benevolentUfo.x + benevolentUfo.width / 2, benevolentUfo.y + benevolentUfo.height / 2, colors.benevolentUfo[1], 40);
                 squidSquadActive = true;
@@ -840,8 +842,8 @@ function update() {
     }
 
     if (gameOver && !gameConfig.isDemo) {
-        if (score > highScore) {
-            highScore = score;
+        if (gameState.score > highScore) {
+            highScore = gameState.score;
             localStorage.setItem('spaceInvadersHighScore', highScore);
         }
     }
@@ -1010,7 +1012,7 @@ function draw() {
 
     ctx.fillStyle = colors.text;
     ctx.font = '20px "Press Start 2P"';
-    ctx.fillText('Score: ' + score, 10, 25);
+    ctx.fillText('Score: ' + gameState.score, 10, 25);
     ctx.textAlign = 'center';
     ctx.fillText('Level: ' + level, canvas.width / 2, 25);
     ctx.textAlign = 'right';
