@@ -57,9 +57,11 @@
   </script>
 
   <script src="script.js"></script>
-  <script>
+  <script type="module">
+    import { setupRealtimeLeaderboard } from './network.js';
     document.addEventListener('DOMContentLoaded', () => {
       initGame({ isDemo: false });
+      setupRealtimeLeaderboard();
     });
   </script>
 </body>
